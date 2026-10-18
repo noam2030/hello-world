@@ -1,0 +1,24 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy
+        run: |
+          gcloud run deploy hello-world --source . --region us-central1 --project ai-learning-499409 \
+            --allow-unauthenticated --quiet \
+            --set-env-vars "AUTHENTICATION__GOOGLE__CLIENTID=${{ secrets.AUTHENTICATION__GOOGLE__CLIENTID }},AUTHENTICATION__GOOGLE__CLIENTSECRET=${{ secrets.AUTHENTICATION__GOOGLE__CLIENTSECRET }},ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}"

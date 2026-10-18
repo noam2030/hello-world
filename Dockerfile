@@ -15,7 +15,8 @@ RUN dotnet publish HelloWorld.csproj -c Release -o /app/publish --no-restore /p:
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Cloud Run sends traffic to port 8080 by default.
+# Cloud Run sends traffic to $PORT (8080 by default); the entrypoint below
+# binds Kestrel to $PORT, falling back to 8080 when it is not set.
 # Cloud Run terminates TLS and forwards plain HTTP with X-Forwarded-Proto/For headers.
 # ASPNETCORE_FORWARDEDHEADERS_ENABLED makes ASP.NET Core trust those headers, so
 # Request.Scheme is "https" and the Google OAuth redirect URI is built correctly.
@@ -29,4 +30,4 @@ COPY --from=build /app/publish .
 # Run as the non-root user that ships with the official .NET images.
 USER $APP_UID
 
-ENTRYPOINT ["dotnet", "HelloWorld.dll"]
+ENTRYPOINT ["/bin/sh", "-c", "ASPNETCORE_HTTP_PORTS=${PORT:-8080} exec dotnet HelloWorld.dll"]
