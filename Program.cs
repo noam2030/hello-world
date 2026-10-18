@@ -65,7 +65,7 @@ app.MapGet("/", (HttpContext ctx) =>
           """
         : """<p><a href="/signin">Sign in with Google</a></p>""";
 
-    return Results.Content($"<!doctype html><html><body><h1>Hello, Guest!</h1>{body}</body></html>",
+    return Results.Content($"<!doctype html><html><body><h1>hello guest!!</h1>{body}</body></html>",
         "text/html");
 });
 
